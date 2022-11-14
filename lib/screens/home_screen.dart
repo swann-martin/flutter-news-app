@@ -18,12 +18,8 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.menu),
-          color: Colors.white,
-        ),
       ),
+      drawer: const NavigationDrawer(),
       bottomNavigationBar: const BottomNavBar(index: 0),
       extendBodyBehindAppBar: true,
       body: ListView(padding: EdgeInsets.zero, children: [
@@ -33,6 +29,90 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+class NavigationDrawer extends StatelessWidget {
+  const NavigationDrawer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Drawer(
+          child: SingleChildScrollView(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[buildHeader(context), buildMenuItems(context)]),
+      ));
+}
+
+Widget buildHeader(BuildContext context) => Material(
+      color: Colors.grey.shade700,
+      child: InkWell(
+        onTap: () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const UserScreen())),
+        child: Container(
+          padding: EdgeInsets.only(
+              top: 24 + MediaQuery.of(context).padding.top, bottom: 24),
+          child: Column(children: const [
+            CircleAvatar(
+              radius: 52,
+              backgroundImage: NetworkImage(
+                  'https://avatars.githubusercontent.com/u/71760899?v=4'),
+            ),
+            SizedBox(
+              height: 12,
+            ),
+            Text('Swann Martin',
+                style: TextStyle(fontSize: 28, color: Colors.white)),
+            Text('swannmartin@swannmartin.xyz',
+                style: TextStyle(fontSize: 16, color: Colors.white)),
+          ]),
+        ),
+      ),
+    );
+Widget buildMenuItems(BuildContext context) => Container(
+      padding: const EdgeInsets.all(24),
+      child: Wrap(
+        runSpacing: 16,
+        children: [
+          ListTile(
+              leading: const Icon(Icons.home_outlined),
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed((context), HomeScreen.routeName);
+              }),
+          ListTile(
+            leading: const Icon(Icons.favorite_border_outlined),
+            title: const Text('Favourite'),
+            onTap: () =>
+                Navigator.pushNamed((context), DiscoverScreen.routeName),
+          ),
+          ListTile(
+              leading: const Icon(Icons.workspaces_outlined),
+              title: const Text('Workflow'),
+              onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const DiscoverScreen()),
+                  )),
+          ListTile(
+            leading: const Icon(Icons.update),
+            title: const Text('Updates'),
+            onTap: () {},
+          ),
+          const Divider(
+            color: Colors.grey,
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings_outlined),
+            title: const Text('Settings'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.notifications_outlined),
+            title: const Text('Notifications'),
+            onTap: () {},
+          ),
+        ],
+      ),
+    );
 
 class _BreakingNews extends StatelessWidget {
   const _BreakingNews({
