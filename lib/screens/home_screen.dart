@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:newsapp/models/article_models.dart';
 import 'package:newsapp/screens/screens.dart';
@@ -6,33 +8,88 @@ import 'package:newsapp/widgets/custom_tag.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/image_container.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+import 'package:http/http.dart' as http;
 
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
   static const routeName = "/";
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Future<List<Article>> fetchArticles() async {
+    var response = await http.get(Uri.parse('http://localhost:3000/articles'));
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((article) => Article.fromJson(article)).toList();
+    }
+    throw Exception('Failed to fetch the news');
+  }
 
   @override
-  Widget build(BuildContext context) {
-    Article article = Article.articles[0];
+  Widget build(context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.menu),
-          color: Colors.white,
-        ),
-      ),
       bottomNavigationBar: const BottomNavBar(index: 0),
       extendBodyBehindAppBar: true,
-      body: ListView(padding: EdgeInsets.zero, children: [
-        _NewsOfTheDay(article: article),
-        _BreakingNews(articles: Article.articles)
-      ]),
+      appBar: AppBar(
+        title: const Text("The news Today"),
+      ),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        color: Colors.grey,
+        padding: const EdgeInsets.all(8),
+        child: FutureBuilder<List<Article>>(
+            future: fetchArticles(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                List<Article> articles = snapshot.data!;
+                return ListView(
+                  children: [
+                    _NewsOfTheDay(
+                      article: articles[0],
+                    ),
+                    _BreakingNews(articles: articles),
+                    // ListView.builder(
+                    //   itemCount: 3,
+                    //   shrinkWrap: true,
+                    //   itemBuilder: (context, index) {
+                    //     return Container(
+                    //         margin: const EdgeInsets.all(8),
+                    //         padding: const EdgeInsets.all(8),
+                    //         color: Colors.white,
+                    //         child: Column(
+                    //           children: [
+                    //             _BreakingNews(articles: articles),
+                    //           ],
+                    //         ));
+                    //   },
+                    // ),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }
+              return const CircularProgressIndicator();
+            }),
+      ),
     );
   }
 }
+
+// Widget buildHome(List<Article> articles) {
+//   Article article = articles[0];
+//   return Container(
+//     height: 100,
+//     width: 300,
+//     child: ListView(padding: EdgeInsets.zero, children: [
+//       _NewsOfTheDay(article: article),
+//       _BreakingNews(articles: articles)
+//     ]),
+//   );
+// }
 
 class _BreakingNews extends StatelessWidget {
   const _BreakingNews({
@@ -69,18 +126,15 @@ class _BreakingNews extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.only(right: 10),
+                    width: MediaQuery.of(context).size.width * 0.5,
                     child: InkWell(
-                      onTap: (() => Navigator.pushNamed(
-                            context,
-                            ArticleScreen.routeName,
-                            arguments: articles[index],
-                          )),
+                      onTap: () {},
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ImageContainer(
                               width: MediaQuery.of(context).size.width * 0.5,
-                              imageUrl: articles[index].imageUrl),
+                              imageUrl: articles[index].urlToImage),
                           const SizedBox(
                             height: 10,
                           ),
@@ -90,13 +144,13 @@ class _BreakingNews extends StatelessWidget {
                                   .textTheme
                                   .bodyLarge!
                                   .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.5)),
+                                    fontWeight: FontWeight.bold,
+                                    height: 1.5,
+                                  )),
                           const SizedBox(
                             height: 5,
                           ),
-                          Text(
-                              'Il y a ${DateTime.now().difference(articles[index].createdAt).inHours} heures',
+                          Text(articles[index].publishedAt,
                               maxLines: 2,
                               style: Theme.of(context)
                                   .textTheme
@@ -140,7 +194,7 @@ class _NewsOfTheDay extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.45,
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
-      imageUrl: Article.articles[0].imageUrl,
+      imageUrl: article.urlToImage,
       child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,

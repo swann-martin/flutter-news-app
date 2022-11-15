@@ -27,17 +27,23 @@ class DiscoverScreen extends StatelessWidget {
           ),
         ),
         bottomNavigationBar: const BottomNavBar(index: 1),
-        body: ListView(
-            padding: const EdgeInsets.all(20.0),
-            children: [const _DiscoverNews(), _CategoryNews(tabs: tabs)]),
+        body: ListView(padding: const EdgeInsets.all(20.0), children: [
+          const _DiscoverNews(),
+          _CategoryNews(
+            tabs: tabs,
+            articles: [],
+          )
+        ]),
       ),
     );
   }
 }
 
 class _CategoryNews extends StatelessWidget {
+  final List<Article> articles;
   const _CategoryNews({
     Key? key,
+    required this.articles,
     required this.tabs,
   }) : super(key: key);
 
@@ -45,7 +51,6 @@ class _CategoryNews extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final articles = Article.articles;
     return Column(
       children: [
         TabBar(
@@ -70,11 +75,11 @@ class _CategoryNews extends StatelessWidget {
                       itemBuilder: ((context, index) {
                         return InkWell(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              ArticleScreen.routeName,
-                              arguments: articles[index],
-                            );
+                            // Navigator.pushNamed(
+                            //   context,
+                            //   ArticleScreen.routeName,
+                            //   arguments: articles[index],
+                            // );
                           },
                           child: Row(
                             children: [
@@ -83,7 +88,7 @@ class _CategoryNews extends StatelessWidget {
                                   height: 80,
                                   margin: const EdgeInsets.all(10.0),
                                   borderRadius: 5,
-                                  imageUrl: articles[index].imageUrl),
+                                  imageUrl: articles[index].urlToImage),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,8 +116,7 @@ class _CategoryNews extends StatelessWidget {
                                         const SizedBox(
                                           width: 5,
                                         ),
-                                        Text(
-                                            'Il y a ${DateTime.now().difference(articles[index].createdAt).inHours} heures',
+                                        Text(articles[index].publishedAt,
                                             maxLines: 2,
                                             style: Theme.of(context)
                                                 .textTheme
@@ -123,22 +127,6 @@ class _CategoryNews extends StatelessWidget {
                                         const SizedBox(
                                           width: 5,
                                         ),
-                                        const Icon(
-                                          Icons.visibility,
-                                          size: 18,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Text(
-                                            '${articles[index].views} lecteurs',
-                                            maxLines: 2,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    height: 1.5))
                                       ],
                                     )
                                   ],

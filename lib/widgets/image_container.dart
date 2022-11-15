@@ -4,7 +4,7 @@ class ImageContainer extends StatelessWidget {
   const ImageContainer(
       {Key? key,
       this.height = 125,
-      this.borderRadius = 20,
+      this.borderRadius = 10,
       required this.width,
       required this.imageUrl,
       this.padding,
@@ -28,7 +28,7 @@ class ImageContainer extends StatelessWidget {
       padding: padding,
       margin: margin,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
           image: DecorationImage(
             image: NetworkImage(imageUrl),
             fit: BoxFit.cover,
