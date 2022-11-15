@@ -80,8 +80,8 @@ Widget buildMenuItems(BuildContext context) => Container(
                 Navigator.pushNamed((context), HomeScreen.routeName);
               }),
           ListTile(
-            leading: const Icon(Icons.favorite_border_outlined),
-            title: const Text('Favourite'),
+            leading: const Icon(Icons.search_outlined),
+            title: const Text('Discover'),
             onTap: () =>
                 Navigator.pushNamed((context), DiscoverScreen.routeName),
           ),
@@ -101,10 +101,11 @@ Widget buildMenuItems(BuildContext context) => Container(
             color: Colors.grey,
           ),
           ListTile(
-            leading: const Icon(Icons.settings_outlined),
-            title: const Text('Settings'),
-            onTap: () {},
-          ),
+              leading: const Icon(Icons.settings_outlined),
+              title: const Text('Settings'),
+              onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const UserScreen()),
+                  )),
           ListTile(
             leading: const Icon(Icons.notifications_outlined),
             title: const Text('Notifications'),
