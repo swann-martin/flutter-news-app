@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import "screens/screens.dart";
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,9 +13,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Intl.defaultLocale = 'fr';
+    initializeDateFormatting('fr_FR', null);
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter New App',
         theme: ThemeData(
           primarySwatch: Colors.grey,
         ),

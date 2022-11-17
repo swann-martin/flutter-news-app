@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:newsapp/models/article_models.dart';
 import 'package:newsapp/widgets/image_container.dart';
 import '../widgets/custom_tag.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ArticleScreen extends StatelessWidget {
   const ArticleScreen({Key? key}) : super(key: key);
   static const routeName = "/article";
+
   @override
   Widget build(BuildContext context) {
     final article = ModalRoute.of(context)!.settings.arguments as Article;
+
     return ImageContainer(
       width: double.infinity,
-      imageUrl: article.imageUrl,
+      imageUrl: article.urlToImage,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -44,6 +48,7 @@ class _NewsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20.0),
+      height: MediaQuery.of(context).size.height * 2 / 3,
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0),
@@ -55,9 +60,8 @@ class _NewsBody extends StatelessWidget {
           children: [
             CustomTag(backgroundColor: Colors.black, children: [
               CircleAvatar(
-                radius: 10,
-                backgroundImage: NetworkImage(article.authorImageUrl),
-              ),
+                  radius: 10,
+                  backgroundImage: NetworkImage(article.urlToImage)),
               const SizedBox(
                 width: 5,
               ),
@@ -80,23 +84,14 @@ class _NewsBody extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
-              Text('${DateTime.now().difference(article.createdAt).inHours} h',
-                  maxLines: 2, style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                  '${DateFormat.yMMMMEEEEd().format(DateTime.parse(article.publishedAt).toLocal())} ',
+                  maxLines: 2,
+                  style: Theme.of(context).textTheme.bodyMedium),
             ]),
             const SizedBox(
               width: 10,
             ),
-            CustomTag(backgroundColor: Colors.grey.shade200, children: [
-              const Icon(
-                Icons.remove_red_eye,
-                color: Colors.grey,
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              Text('${article.views}',
-                  maxLines: 2, style: Theme.of(context).textTheme.bodyMedium),
-            ]),
           ],
         ),
         const SizedBox(
@@ -113,24 +108,44 @@ class _NewsBody extends StatelessWidget {
           height: 20,
         ),
         Text(
-          article.body,
+          article.content,
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(height: 1.5),
         ),
         const SizedBox(
           height: 20,
         ),
-        GridView.builder(
-            shrinkWrap: true,
-            itemCount: 2,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, childAspectRatio: 1.25),
-            itemBuilder: (context, index) {
-              return ImageContainer(
-                width: MediaQuery.of(context).size.width * 0.42,
-                imageUrl: article.imageUrl,
-                margin: const EdgeInsets.only(right: 5.0, bottom: 5.0),
-              );
-            })
+        SizedBox(
+          width: double.infinity,
+          child: InkWell(
+            onTap: () async => {
+              if (await canLaunchUrl(Uri.parse(article.url)))
+                {
+                  await launchUrl(Uri.parse(article.url),
+                      mode: LaunchMode.inAppWebView)
+                }
+              else
+                {debugPrint('failed to lauch')}
+            },
+            child: Text(
+              "Voir Plus",
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ),
+
+        // GridView.builder(
+        //     shrinkWrap: true,
+        //     itemCount: 2,
+        //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        //         crossAxisCount: 2, childAspectRatio: 1.25),
+        //     itemBuilder: (context, index) {
+        //       return ImageContainer(
+        //         width: MediaQuery.of(context).size.width * 0.42,
+        //         imageUrl: article.urlToImage,
+        //         margin: const EdgeInsets.only(right: 5.0, bottom: 5.0),
+        //       );
+        //     })
       ]),
     );
   }
@@ -157,7 +172,7 @@ class _NewsHeadline extends StatelessWidget {
           ),
           CustomTag(backgroundColor: Colors.grey.withAlpha(150), children: [
             Text(
-              article.category,
+              article.source,
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium!
@@ -175,13 +190,13 @@ class _NewsHeadline extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          Text(
-            article.subtitle,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium!
-                .copyWith(color: Colors.white),
-          ),
+          // Text(
+          //   article.source,
+          //   style: Theme.of(context)
+          //       .textTheme
+          //       .bodyMedium!
+          //       .copyWith(color: Colors.white),
+          // ),
           // Text(
           //   article.body,
           //   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
