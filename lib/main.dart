@@ -1,4 +1,7 @@
+import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
+import 'package:newsapp/themes.dart';
+import 'package:newsapp/utils/user_preferences.dart';
 import "screens/screens.dart";
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -15,16 +18,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Intl.defaultLocale = 'fr';
     initializeDateFormatting('fr_FR', null);
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.grey,
-        ),
-        initialRoute: "/",
-        routes: {
-          HomeScreen.routeName: (context) => const HomeScreen(),
-          DiscoverScreen.routeName: (context) => const DiscoverScreen(),
-          ArticleScreen.routeName: (context) => const ArticleScreen(),
-        });
+    return ThemeProvider(
+        initTheme: user.isDarkMode ? MyThemes.darkTheme : MyThemes.lightTheme,
+        child: Builder(
+          builder: (context) => MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: user.isDarkMode ? MyThemes.darkTheme : MyThemes.lightTheme,
+              routes: {
+              initialRoute: "/",
+                HomeScreen.routeName: (context) => const HomeScreen(),
+                ArticleScreen.routeName: (context) => const ArticleScreen(),
+                DiscoverScreen.routeName: (context) => const DiscoverScreen(),
+              }),
+        ));
   }
 }

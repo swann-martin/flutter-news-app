@@ -20,12 +20,13 @@ class DiscoverScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.menu),
-            color: Colors.black,
-          ),
+          // leading: IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(Icons.menu),
+          //   color: Colors.black,
+          // ),
         ),
+        drawer: const NavigationDrawer(),
         bottomNavigationBar: const BottomNavBar(index: 1),
         body: ListView(padding: const EdgeInsets.all(20.0), children: [
           const _DiscoverNews(),
