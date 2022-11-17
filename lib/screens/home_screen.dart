@@ -47,8 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("The news Today"),
       ),
       drawer: const NavigationDrawer(),
-      extendBodyBehindAppBar: true,
-      bottomNavigationBar: const BottomNavBar(index: 0),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,

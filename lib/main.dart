@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const user = UserPreferences.myUser;
     Intl.defaultLocale = 'fr';
     initializeDateFormatting('fr_FR', null);
     return ThemeProvider(
@@ -25,7 +26,6 @@ class MyApp extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               theme: user.isDarkMode ? MyThemes.darkTheme : MyThemes.lightTheme,
               routes: {
-              initialRoute: "/",
                 HomeScreen.routeName: (context) => const HomeScreen(),
                 ArticleScreen.routeName: (context) => const ArticleScreen(),
                 DiscoverScreen.routeName: (context) => const DiscoverScreen(),
