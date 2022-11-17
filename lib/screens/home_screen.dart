@@ -9,6 +9,7 @@ import '../widgets/bottom_nav_bar.dart';
 import '../widgets/image_container.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -18,8 +19,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<Article>> dataFuture;
+  @override
+  void initState() {
+    super.initState();
+
+    dataFuture = fetchArticles();
+  }
+
   Future<List<Article>> fetchArticles() async {
-    var response = await http.get(Uri.parse('http://localhost:3000/articles'));
+    var response = await http.get(Uri.parse('http://10.0.2.2:3000/articles'));
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
       return jsonResponse.map((article) => Article.fromJson(article)).toList();
@@ -41,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.grey,
         padding: const EdgeInsets.all(8),
         child: FutureBuilder<List<Article>>(
-            future: fetchArticles(),
+            future: dataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done &&
                   snapshot.hasData) {
@@ -52,21 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       article: articles[0],
                     ),
                     _BreakingNews(articles: articles),
-                    // ListView.builder(
-                    //   itemCount: 3,
-                    //   shrinkWrap: true,
-                    //   itemBuilder: (context, index) {
-                    //     return Container(
-                    //         margin: const EdgeInsets.all(8),
-                    //         padding: const EdgeInsets.all(8),
-                    //         color: Colors.white,
-                    //         child: Column(
-                    //           children: [
-                    //             _BreakingNews(articles: articles),
-                    //           ],
-                    //         ));
-                    //   },
-                    // ),
                   ],
                 );
               } else if (snapshot.hasError) {
@@ -79,18 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Widget buildHome(List<Article> articles) {
-//   Article article = articles[0];
-//   return Container(
-//     height: 100,
-//     width: 300,
-//     child: ListView(padding: EdgeInsets.zero, children: [
-//       _NewsOfTheDay(article: article),
-//       _BreakingNews(articles: articles)
-//     ]),
-//   );
-// }
-
 class _BreakingNews extends StatelessWidget {
   const _BreakingNews({
     Key? key,
@@ -98,6 +80,7 @@ class _BreakingNews extends StatelessWidget {
   }) : super(key: key);
 
   final List<Article> articles;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -128,7 +111,13 @@ class _BreakingNews extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 10),
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          ArticleScreen.routeName,
+                          arguments: articles[index],
+                        );
+                      },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -150,7 +139,10 @@ class _BreakingNews extends StatelessWidget {
                           const SizedBox(
                             height: 5,
                           ),
-                          Text(articles[index].publishedAt,
+                          Text(
+                              DateFormat.yMd().format(
+                                  DateTime.parse(articles[index].publishedAt)
+                                      .toLocal()),
                               maxLines: 2,
                               style: Theme.of(context)
                                   .textTheme

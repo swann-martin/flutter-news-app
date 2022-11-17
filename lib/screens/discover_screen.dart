@@ -75,11 +75,11 @@ class _CategoryNews extends StatelessWidget {
                       itemBuilder: ((context, index) {
                         return InkWell(
                           onTap: () {
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   ArticleScreen.routeName,
-                            //   arguments: articles[index],
-                            // );
+                            Navigator.pushNamed(
+                              context,
+                              ArticleScreen.routeName,
+                              arguments: articles[index],
+                            );
                           },
                           child: Row(
                             children: [

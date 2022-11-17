@@ -28,7 +28,8 @@ class BottomNavBar extends StatelessWidget {
           BottomNavigationBarItem(
               icon: IconButton(
                   onPressed: () {
-                    // Navigator.pushNamed((context), DiscoverScreen.routeName);
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const DiscoverScreen()));
                   },
                   icon: const Icon(Icons.search)),
               label: "Search"),
